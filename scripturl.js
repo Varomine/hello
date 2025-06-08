@@ -4,7 +4,7 @@ async function searchResults(keyword) {
         const response = await fetchv2(searchUrl);
         const html = await response.text();
         const results = [];
-        const stopIndex = html.indexOf('อนิเมะอัพเดทใหม่');
+        const stopIndex = html.indexOf(keyword);
         const searchArea = stopIndex !== -1 ? html.substring(0, stopIndex) : html;
 
         const boxRegex = /<div class="box">([\s\S]*?)<\/div>\s*<\/div>/g;
@@ -13,10 +13,10 @@ async function searchResults(keyword) {
         while ((match = boxRegex.exec(searchArea)) !== null) {
             const itemHtml = match[1];
 
-            const titleMatch = itemHtml.match(/<div class="post_title">([^<]+)<\/div>/);
-            const hrefMatch = itemHtml.match(/<a class="pagelink"[^>]+href="([^"]+)"/);
+            const titleMatch = itemHtml.match(/<div class="title_movie">([^<]+)<\/div>/);
+            const hrefMatch = itemHtml.match(/<a style="color: #ffffff;"[^>]+href="([^"]+)"/);
             const imgMatch = itemHtml.match(/<img[^>]+(?:data-)?src="([^"]+)"[^>]*>/);
-            const episodeMatch = itemHtml.match(/<span class="badge badge-danger"[^>]*>([^<]+)<\/span>/);
+            const episodeMatch = 12;// itemHtml.match(/<span class="badge badge-danger"[^>]*>([^<]+)<\/span>/);
 
             if (!titleMatch || !hrefMatch || !imgMatch) continue;
 
@@ -44,7 +44,7 @@ async function extractDetails(url) {
     const response = await fetchv2(url);
     const html = await response.text();
 
-    const descriptionMatch = html.match(/<div class="summary"><p>.*?<br>([\s\S]*?)<\/p><\/div>/);
+    const descriptionMatch = html.match(/<div class="panel-body"><p>.*?<br>([\s\S]*?)<\/p><\/div>/);
     let description = descriptionMatch ? descriptionMatch[1].trim() : `Weirdly the website doesn't provide any description, either that or I'm blind.`;
 
     description = description.replace(/<\/?br\s*\/?>/gi, '');
